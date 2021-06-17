@@ -1,91 +1,38 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
         <meta charset="utf-8">
+        <title>Export preview</title>
     </head>
     <body>
-        <script type="text/javascript">
-            const uriXLS = 'data:application/vnd.ms-excel;base64,';
-            const templateXLS = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><meta http-equiv="content-type" content="text/plain; charset=UTF-8"/></head><body>{table}</body></html>';
-
-            function exportData() {
-                let worksheetName = 'test';
-                let content = buildTable(parseForm());
-                let fileName = 'test.xls';
-                let worksheet = {worksheet: worksheetName || 'Worksheet', table: content.outerHTML};
-                
-                let link = document.createElement("a");
-                link.download = fileName;
-                link.href = uriXLS + formatData(templateXLS, worksheet);
-                link.click();  
-            }
-
-            function formatData (template, worksheet) {
-                let formattedData = template.replace(/{(\w+)}/g, function(m, p) {
-                    return worksheet[p]; 
-                });
-                return window.btoa(unescape(encodeURIComponent(formattedData)));
-            }
-
-            function parseForm() {
-                let data = {};
-                let fields = document.querySelectorAll('.exportable-field');
-                if (fields != null) {
-                    for (let field of fields) {
-                        let label = findElementByAttribute(field, 'for');
-                        let value = findElementByAttribute(field, 'value');
-                        data[label.textContent] = value.getAttribute("value");
-                    }
-                }
-                return data;
-            }
-            function buildTable (data) {
-                let table = document.createElement("table");
-
-                for (let key in data) {
-                    let row = document.createElement("tr");
-
-                    let fieldName = document.createElement("td");
-                    fieldName.textContent = key;
-
-                    let fieldValue = document.createElement("td");
-                    fieldValue.textContent = data[key];
-
-                    row.append(fieldName, fieldValue);
-
-                    table.appendChild(row);
-                }
-
-                return table;
-            }
-            function findElementByAttribute (node, attribute) {
-                if (node.hasAttribute(attribute)) {
-                    return node;
-                } else {
-                    if (node.hasChildNodes()) {
-                        for (let child of node.children) {
-                            let element = findElementByAttribute(child, attribute);
-                            if (element != null) {
-                                return element;
-                            }
-                        }
-                        return null;
-                    } else {
-                        return null;
-                    }
-                }
-            }
-        </script>
-        <div>
-            <div class="exportable-field">
-                <label for="1"><span id='sdf'>[f[f[f</span>Лейбл 1</label>
-                <input type="text" id="1" value="знач 1"/>
+        <script type="text/javascript" src="exportXLS.js"></script>
+        <div class="exportable-cmp">
+            <h3 class="exportable-header">General information</h3>
+            <div>
+                <label for="name"><span>[f[f[f</span>Name</label>
+                <input class="exportable-field" type="text" id="name" value="" placeholder="Your name"/>
             </div>
-            <div class="exportable-field">
-                <label for="2">Лэйбл 2<span id='sdf'>[f[f[f</span></label>
-                <input type="text" id="2" value="знач 2"/>
+            <div>
+                <label for="surname">Surname<span>[f[f[f</span></label>
+                <input class="exportable-field" type="text" id="surname" value="" placeholder="Your surname"/>
             </div>
-            <button onclick="exportData()" type="button">Export</button>
         </div>
+        <div class="exportable-cmp">
+            <h3 class="exportable-header">Additional information</h3>
+            <div>
+                <label for="birthdate">Your birthdate</label>
+                <input class="exportable-field" type="date" id="birthdate" value=""/>
+            </div>
+        </div>
+        <div class="exportable-cmp">
+            <h3 class="exportable-header">Agreements</h3>
+            <div>
+                <label for="stat">Agree to send anonymous statistics</label>
+                <input  class="exportable-field exportable-boolean" type="checkbox" id="stat" checked/>
+            </div>
+        </div>
+        <br>
+        <br>
+        <button onclick="exportData(document, 'test', 'test', 'ru')" type="button">Export XLS</button>
     </body>
 </html>
